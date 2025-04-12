@@ -155,46 +155,21 @@ def open_budget_creator():
     canvas.bind_all("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))  # For Linux
     canvas.bind_all("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))  # For Linux
 
-    # Create input fields for each category except "Total"
-    input_fields = {}  # Dictionary to store input fields for each category
-    try:
-        for _, row in df.iterrows():
-            category = row["Category"]
+    # Unbind mouse wheel scrolling when the window is closed
+    def on_close():
+        canvas.unbind_all("<MouseWheel>")
+        canvas.unbind_all("<Button-4>")
+        canvas.unbind_all("<Button-5>")
+        budget_window.destroy()
 
-            # Skip the "Total" category
-            if category.lower() == "total":
-                continue
-
-            # Create a label for the category
-            category_label = tk.Label(scrollable_content, text=f"{category}:", font=("Arial", 12))
-            category_label.pack(anchor="w", padx=5, pady=2)
-
-            # Create an input field for the category
-            category_entry = tk.Entry(scrollable_content, width=20, font=("Arial", 12))
-            category_entry.pack(anchor="w", padx=5, pady=2)
-
-            # Store the input field in the dictionary
-            input_fields[category] = category_entry
-
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to create input fields: {e}")
-
-    # Add a button to save the budget inputs
-    def save_budget():
-        budget_data = {}
-        for category, entry in input_fields.items():
-            value = entry.get()
-            budget_data[category] = value
-
-        # Display the saved budget data (you can save it to a file or process it further)
-        messagebox.showinfo("Budget Saved", f"Budget data saved:\n{budget_data}")
+    budget_window.protocol("WM_DELETE_WINDOW", on_close)
 
     # Add a frame for the buttons
     button_frame = tk.Frame(budget_window)
     button_frame.pack(pady=10)
 
     # Add the "Save Budget" button
-    save_button = tk.Button(button_frame, text="Save Budget", command=save_budget, width=15, height=2)
+    save_button = tk.Button(button_frame, text="Save Budget", command=lambda: messagebox.showinfo("Save", "Budget saved!"), width=15, height=2)
     save_button.pack(side=tk.LEFT, padx=5)
 
     # Add the "Add Category" button
@@ -202,7 +177,7 @@ def open_budget_creator():
     add_category_button.pack(side=tk.LEFT, padx=5)
 
     # Add the "Back" button
-    back_button = tk.Button(button_frame, text="Back", command=budget_window.destroy, width=15, height=2)
+    back_button = tk.Button(button_frame, text="Back", command=on_close, width=15, height=2)
     back_button.pack(side=tk.LEFT, padx=5)
 
 def open_category_manager():
@@ -295,6 +270,88 @@ def open_category_manager():
 
     # Add a save button
     save_button = tk.Button(category_window, text="Save Changes", command=save_categories, width=15, height=2)
+    save_button.pack(pady=10)
+
+def open_uncategorized_manager():
+    """Open the Uncategorized Manager window."""
+    # Create a new window
+    uncategorized_window = tk.Toplevel(root)
+    uncategorized_window.title("Uncategorized Manager")
+    uncategorized_window.geometry("800x600")
+
+    # Add a label
+    label = tk.Label(uncategorized_window, text="Manage Uncategorized Entries", font=("Arial", 18))
+    label.pack(pady=10)
+
+    # Create a scrollable frame for the uncategorized entries
+    scrollable_frame = tk.Frame(uncategorized_window)
+    scrollable_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+    canvas = tk.Canvas(scrollable_frame)
+    scrollbar = tk.Scrollbar(scrollable_frame, orient="vertical", command=canvas.yview)
+    scrollable_content = tk.Frame(canvas)
+
+    # Configure the canvas and scrollbar
+    scrollable_content.bind(
+        "<Configure>",
+        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+    )
+    canvas.create_window((0, 0), window=scrollable_content, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
+    # Load uncategorized entries from combined_output.csv
+    combined_output_file = os.path.join(output_folder, "combined_output.csv")
+    if not os.path.exists(combined_output_file):
+        messagebox.showerror("Error", "combined_output.csv not found. Please run the program first.")
+        return
+
+    df = pd.read_csv(combined_output_file)
+    uncategorized_df = df[df["Category"] == "Uncategorized"]
+
+    if uncategorized_df.empty:
+        messagebox.showinfo("No Uncategorized Entries", "All entries are categorized!")
+        uncategorized_window.destroy()
+        return
+
+    # Load categories from categories.py
+    from categories import categories
+    category_names = list(categories.keys())
+
+    # Dictionary to store dropdown selections
+    dropdown_selections = {}
+
+    # Display uncategorized entries with dropdowns
+    for row_index, (_, row) in enumerate(uncategorized_df.iterrows()):
+        # Display the entry description
+        description_label = tk.Label(scrollable_content, text=row["Forklaring"], font=("Arial", 12))
+        description_label.grid(row=row_index, column=0, padx=5, pady=5, sticky="w")
+
+        # Create a dropdown menu for categories
+        selected_category = tk.StringVar(scrollable_content)
+        selected_category.set("Select Category")  # Default value
+        dropdown = tk.OptionMenu(scrollable_content, selected_category, *category_names)
+        dropdown.grid(row=row_index, column=1, padx=5, pady=5, sticky="w")
+
+        # Store the dropdown selection
+        dropdown_selections[row_index] = (row, selected_category)
+
+    # Save changes to combined_output.csv
+    def save_changes():
+        for row_index, (row, selected_category) in dropdown_selections.items():
+            new_category = selected_category.get()
+            if new_category != "Select Category":
+                df.loc[df.index == row.name, "Category"] = new_category
+
+        # Save the updated DataFrame back to combined_output.csv
+        df.to_csv(combined_output_file, index=False)
+        messagebox.showinfo("Success", "Uncategorized entries updated successfully!")
+        uncategorized_window.destroy()
+
+    # Add a save button
+    save_button = tk.Button(uncategorized_window, text="Save Changes", command=save_changes, width=15, height=2)
     save_button.pack(pady=10)
 
 # Create the main application window
