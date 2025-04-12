@@ -192,6 +192,98 @@ def open_budget_creator():
     save_button = tk.Button(budget_window, text="Save Budget", command=save_budget, width=15, height=2)
     save_button.pack(pady=10)
 
+def open_category_manager():
+    """Open the Category Manager window."""
+    # Create a new window
+    category_window = tk.Toplevel(root)
+    category_window.title("Category Manager")
+    category_window.geometry("800x600")
+
+    # Add a label
+    label = tk.Label(category_window, text="Manage Categories", font=("Arial", 18))
+    label.pack(pady=10)
+
+    # Create a scrollable frame for the categories
+    scrollable_frame = tk.Frame(category_window)
+    scrollable_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+    canvas = tk.Canvas(scrollable_frame)
+    scrollbar = tk.Scrollbar(scrollable_frame, orient="vertical", command=canvas.yview)
+    scrollable_content = tk.Frame(canvas)
+
+    # Configure the canvas and scrollbar
+    scrollable_content.bind(
+        "<Configure>",
+        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+    )
+    canvas.create_window((0, 0), window=scrollable_content, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
+    # Load categories from categories.py
+    from categories import categories
+    category_entries = {}  # Dictionary to store category input fields
+
+    # Display existing categories and their keywords
+    row_index = 0
+    for category, keywords in categories.items():
+        # Category label
+        category_label = tk.Label(scrollable_content, text=f"Category: {category}", font=("Arial", 12))
+        category_label.grid(row=row_index, column=0, padx=5, pady=5, sticky="w")
+
+        # Keywords entry
+        keywords_entry = tk.Entry(scrollable_content, width=50, font=("Arial", 12))
+        keywords_entry.insert(0, ", ".join(keywords))
+        keywords_entry.grid(row=row_index, column=1, padx=5, pady=5, sticky="w")
+
+        # Store the entry for later use
+        category_entries[category] = keywords_entry
+        row_index += 1
+
+    # Add input fields for new category
+    new_category_label = tk.Label(scrollable_content, text="New Category:", font=("Arial", 12))
+    new_category_label.grid(row=row_index, column=0, padx=5, pady=5, sticky="w")
+
+    new_category_entry = tk.Entry(scrollable_content, width=20, font=("Arial", 12))
+    new_category_entry.grid(row=row_index, column=1, padx=5, pady=5, sticky="w")
+
+    new_keywords_label = tk.Label(scrollable_content, text="Keywords (comma-separated):", font=("Arial", 12))
+    new_keywords_label.grid(row=row_index + 1, column=0, padx=5, pady=5, sticky="w")
+
+    new_keywords_entry = tk.Entry(scrollable_content, width=50, font=("Arial", 12))
+    new_keywords_entry.grid(row=row_index + 1, column=1, padx=5, pady=5, sticky="w")
+
+    # Save changes to categories.py
+    def save_categories():
+        updated_categories = {}
+
+        # Update existing categories
+        for category, entry in category_entries.items():
+            keywords = entry.get().split(",")
+            updated_categories[category] = [keyword.strip() for keyword in keywords]
+
+        # Add new category if provided
+        new_category = new_category_entry.get().strip()
+        new_keywords = new_keywords_entry.get().strip()
+        if new_category and new_keywords:
+            updated_categories[new_category] = [keyword.strip() for keyword in new_keywords.split(",")]
+
+        # Write updated categories back to categories.py
+        with open(os.path.join(base_folder, "categories.py"), "w", encoding="utf-8") as f:
+            f.write("categories = {\n")
+            for category, keywords in updated_categories.items():
+                f.write(f'    "{category}": {keywords},\n')
+            f.write("}\n")
+
+        messagebox.showinfo("Success", "Categories updated successfully!")
+        category_window.destroy()
+
+    # Add a save button
+    save_button = tk.Button(category_window, text="Save Changes", command=save_categories, width=15, height=2)
+    save_button.pack(pady=10)
+
 # Create the main application window
 root = tk.Tk()
 root.title("Finance Master GUI")
@@ -236,6 +328,10 @@ run_button.pack(pady=10)
 # Add the Budget Creator button
 budget_button = tk.Button(button_frame, text="Budget Creator", command=open_budget_creator, width=15, height=2, state=tk.DISABLED)
 budget_button.pack(pady=10)
+
+# Add the "Add Category" button
+add_category_button = tk.Button(button_frame, text="Add Category", command=open_category_manager, width=15, height=2)
+add_category_button.pack(pady=10)
 
 # Add a progress bar
 progress_bar = ttk.Progressbar(root, mode="indeterminate", length=400)
