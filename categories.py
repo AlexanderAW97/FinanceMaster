@@ -1,5 +1,5 @@
 categories = {
-    "Mat og spiselige ting": ['Rema', 'Kiwi', 'coop', 'oda', 'mat', 'food', 'foodora', 'mcd', 'restaurant', 'cafe', 'dining', 'wolt', 'Kebab', 'Pizza', 'Burger', 'Sushi', 'Thai', 'Taco'],
+    "Mat og spiselige ting": ['Rema', 'Kiwi', 'coop', 'oda', 'mat', 'food', 'foodora', 'mcd', 'restaurant', 'cafe', 'dining', 'wolt', 'Kebab', 'Pizza', 'Burger', 'Sushi', 'Thai', 'Taco', ''],
     "Entertainment": ['movie', 'cinema', 'concert', 'entertainment'],
     "Reise": ['Vy', 'ruter', 'taxi'],
     "Hobby 3D printing": ['elefun', 'inkclub', '3djake', 'clasohlson'],
