@@ -201,6 +201,10 @@ def open_budget_creator():
     add_category_button = tk.Button(button_frame, text="Add Category", command=open_category_manager, width=15, height=2)
     add_category_button.pack(side=tk.LEFT, padx=5)
 
+    # Add the "Back" button
+    back_button = tk.Button(button_frame, text="Back", command=budget_window.destroy, width=15, height=2)
+    back_button.pack(side=tk.LEFT, padx=5)
+
 def open_category_manager():
     """Open the Category Manager window."""
     # Create a new window
