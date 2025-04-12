@@ -189,8 +189,17 @@ def open_budget_creator():
         # Display the saved budget data (you can save it to a file or process it further)
         messagebox.showinfo("Budget Saved", f"Budget data saved:\n{budget_data}")
 
-    save_button = tk.Button(budget_window, text="Save Budget", command=save_budget, width=15, height=2)
-    save_button.pack(pady=10)
+    # Add a frame for the buttons
+    button_frame = tk.Frame(budget_window)
+    button_frame.pack(pady=10)
+
+    # Add the "Save Budget" button
+    save_button = tk.Button(button_frame, text="Save Budget", command=save_budget, width=15, height=2)
+    save_button.pack(side=tk.LEFT, padx=5)
+
+    # Add the "Add Category" button
+    add_category_button = tk.Button(button_frame, text="Add Category", command=open_category_manager, width=15, height=2)
+    add_category_button.pack(side=tk.LEFT, padx=5)
 
 def open_category_manager():
     """Open the Category Manager window."""
