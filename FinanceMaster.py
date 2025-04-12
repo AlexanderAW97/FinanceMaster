@@ -360,8 +360,10 @@ root.title("Finance Master GUI")
 root.geometry("500x830")  # Set the window size
 
 # Add a label
-label = tk.Label(root, text="Welcome to Finance Master\n-Alexander Wiese-", font=("Calibri", 24))
-label.pack(pady=15)
+label = tk.Label(root, text="Welcome to FinanceMaster", font=("Calibri", 24))
+sublabel = tk.Label(root, text="Made by Alexander Wiese", font=("Calibri", 14))
+label.pack(pady=20)
+sublabel.pack(pady=5)
 
 # Create a frame for the input and output lists
 list_frame = tk.Frame(root)
