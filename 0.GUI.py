@@ -147,20 +147,27 @@ def open_budget_creator():
     canvas.pack(side="left", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
 
-    # Create input fields for each category
+    # Enable mouse wheel scrolling
+    def on_mouse_wheel(event):
+        canvas.yview_scroll(-1 * (event.delta // 120), "units")
+
+    canvas.bind_all("<MouseWheel>", on_mouse_wheel)  # For Windows
+    canvas.bind_all("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))  # For Linux
+    canvas.bind_all("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))  # For Linux
+
+    # Create input fields for each category except "Total"
     input_fields = {}  # Dictionary to store input fields for each category
     try:
         for _, row in df.iterrows():
             category = row["Category"]
-                    
-                    # Skip the "Total" category
+
+            # Skip the "Total" category
             if category.lower() == "total":
                 continue
 
             # Create a label for the category
             category_label = tk.Label(scrollable_content, text=f"{category}:", font=("Arial", 12))
             category_label.pack(anchor="w", padx=5, pady=2)
-            
 
             # Create an input field for the category
             category_entry = tk.Entry(scrollable_content, width=20, font=("Arial", 12))
