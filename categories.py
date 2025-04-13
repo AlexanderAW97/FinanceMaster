@@ -5,7 +5,7 @@ categories = {
     "Hobby 3D printing": ['elefun', 'inkclub', '3djake', 'clasohlson'],
     "Hobby: Gaming": ['steam', 'epic', 'game', 'Microsoft', 'playstation', 'xbox', 'gaming', 'nintendo', 'switch', 'blizzard', 'battle.net', 'battle net', 'blizzard entertainment', 'ubisoft', 'ubisoft connect', 'epic games', 'epicgames', 'epic games store', 'epicgamesstore'],
     "Dining": ['restaurant', 'cafe', 'dining', 'food'],
-    "Kontooverføringer": ['kontoregulering', 'kontooverføring', 'overføring', 'betalingtpp'],
+    "Kontooverføringer": ['kontoregulering', 'kontooverføring', 'overføring', 'betalingtpp', "1671"],
     "Sparing": ['morsom', 'avrundet', 'sparing'],
     "Streaming": ['netflix', 'spotify', 'hbo', 'viaplay', 'disney', 'disney+', 'apple tv', 'appletv', 'tv2 play', 'tv2play', 'tidal', 'amazon prime', 'prime video', 'paramount', 'youtube', 'crunchyroll'],
     "Abonnementer": ['abonnement', 'subscription', 'patreon', 'discord', 'twitch', 'Epidemic'],
